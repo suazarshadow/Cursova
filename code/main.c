@@ -1,171 +1,87 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include "list.h"
+#include "input.h"
 #define TABLE_SIZE 10
 
 int main()
 {
-    
-   /* YESNO yesno = YES;
+    YESNO q;
+    int choise = 0;
+    list_node *hashtable[TABLE_SIZE];
+    list_node_load *list = NULL;
 
- 
-    list_node *list = read_data("data.txt");
-    printf("Database is load\n");
-
-    if (list  == NULL) 
+    for(int i = 0; i < TABLE_SIZE; i++)
     {
-        printf("Database is empty\n");
-        list = create_list();
+        hashtable[i] = create_list(i); 
     }
-  
-    else distlay_structure(list);
-    printf("aviable comands: \n");
-    printf("Add info about student(a)\n");
-    printf("Delete info about student(d)\n");
-    printf("Show all info(s)");
-    printf("(help) show all comands; (end) - end the program\n");
 
-    while (1)
+
+    printf("================================================");
+    printf("Author : Chernaik Sviatoslav KM-24\n");
+    printf("Hash Table\n");
+    printf("================================================");
+    while(1)
     {
-       
-        
+        printf("Commands:\n1 - load database\n2 - add student\n3 - delete student\n4 - display all\n5 - save work\n6 - end work\n");
+        printf("================================================\n");
 
-        char *input = ask_string_for_int("[a/d/s/l]\n", "Error: invalid input");
+        choise = ask_int("Enter option\n", "Error: expected int value!\n"); 
+        printf("================================================\n");
 
-        if (!strcmp(input, "end"))
+        switch(choise)
         {
-            printf("If you didn`t write data base to file it won`t save:");
-            yesno = ask_yes_no("Wanna write [y/n]\n", "Error: invalid input");
-            if (yesno == YES)
-            {
-                if (!strcmp(input, "w")||!strcmp(input, "W"))
+            case 1:
+                list = read_data("data.txt");
+                transfer_data_to_hashtable(list, hashtable);
+                printf("DataBase loaded succsesfully\n");
+                free_list_node_load(list);
+                printf("================================================\n");
+                break;
+            case 2:
+                add_student(hashtable);
+                printf("Student added sucsesfuly\n");
+                printf("================================================\n");
+                break;
+            case 3:
+                delete_student_info(hashtable);
+                printf("Student deleted sucsesfuly\n");
+                printf("================================================\n");
+                break;
+            case 4:
+                distlay_structure(hashtable);
+                printf("================================================\n");
+                break;
+            case 5:
+                printf("WARNING: your old data can be deleted FOREVER\n");
+                q = ask_yes_no("Wanna save data[y/n]\n","Error: wrond input\n");
+                if(q) write_data(hashtable, "data.txt");
+                printf("================================================\n");
+                break;
+            case 6:
+                printf("WARNING: your non saved data will be deleted FOREVER\n");
+                q = ask_yes_no("Wanna save data[y/n]","Error: wrond input");
+                if(q) 
                 {
-                    printf("Chose type of database\n");
-                    input = ask_string_for_int("json/txt/bin\n", "Error: invalid input");
-                    if (!strcmp(input, "json"))
+                    write_data(hashtable, "data.txt");
+                    for(int i = 0; i< TABLE_SIZE; i++)
                     {
-                        write_data_json(list);
+                        free_list_node(hashtable[i]);
                     }
-                    if (!strcmp(input, "txt"))
-                    {
-                        write_data(list ,"data.txt");
-                    }
-                    if (!strcmp(input, "bin"))
-                    {
-                        write_data(list ,"data.bin");
-                    }
-                    else printf("Unknow command\n!");
+                    return 0;
                 }
-
-            }
-
-            write_data(list, "data.txt")
-            free_list_node(list);
-
-            return 0;
+                else
+                {
+                    for(int i = 0; i < TABLE_SIZE; i++)
+                    {
+                        free_list_node(hashtable[i]);
+                    }
+                    return 0;
+                }
+            default:
+                printf("Unknown command!\n");
         }
-        if (!strcmp(input, "help"))
-        {
-            printf("Add info about student(a)\n");
-            printf("Delete info about student(d)\n");
-            printf("Show all info(s)\n");
-            printf("(end) - end the program\n");
-            printf("w - write to chosed type of file\n");
-        }
-
-        if (!strcmp(input, "a")||!strcmp(input, "A"))
-        {
-            
-            while (yesno != NO)
-            {
-                add_student_info(list);
-                yesno = ask_yes_no("Wanna continue [y/n]?\n","Error: input error");
-
-            }
-        }
-
-        if (!strcmp(input, "d")||!strcmp(input, "D"))
-        {
-            while (yesno != NO)
-            {
-                add_student_info(list);
-                yesno = ask_yes_no("Wanna continue [y/n]?\n","Error: input error");
-
-            }
-        }
-        if (!strcmp(input, "s")||!strcmp(input, "S"))
-        {
-            distlay_structure(list);
-        }
-            else printf("Unknow command\n!");
-
-        if (!strcmp(input, "w")||!strcmp(input, "W"))
-        {
-            printf("Chose type of database\n");
-            input = ask_string_for_int("json/txt/bin\n", "Error: invalid input");
-            if (!strcmp(input, "json"))
-            {
-                write_data_json(list);
-            }
-            if (!strcmp(input, "txt"))
-            {
-                write_data(list ,"data.txt");
-            }
-            if (!strcmp(input, "bin"))
-            {
-                write_data(list ,"data.bin");
-            }
-            else printf("Unknow command\n!");
-        }
-
-        else printf("Unknow command\n!");
+        printf("================================================\n");
     }
-    
-       */
-    HashTable *hashtable = init_hash_table();
-    int key = 0;
-    while (key < TABLE_SIZE)
-    {
-        create_list(hashtable, key);
-        key++;
-    }
-    list_node *curr = hashtable -> head;
-    key = 0;
-    while (key < TABLE_SIZE)
-    {
-        
-        if(curr -> size  == 0)
-        {
-            printf("--------\n");
-        }
-        else
-        {
-            printf("Error");
-        }
-        key++;
-        curr = curr -> next;
-    }
-    printf("----------\n");
-    printf("Sviatoslav Cherniak KM-24 => %d\n", get_key("Sviatoslav", "Cherniak", "KM-24"));
-    printf("Max Fedosenko KM-24 => %u\n", get_key("Max", "Fedosenko", "KM-24"));
-    printf("max fedosenko km-24 => %u\n", get_key("max", "fedosenko", "km-24"));
-
-    Student *s = malloc(sizeof(Student));
-
-    strcpy(s->name, "Sviatoslav");
-    strcpy(s->surname, "Cherniak");
-    strcpy(s->group, "KM-24");
-    add_to_hash_table(s, get_key("Sviatoslav", "Cherniak", "KM-24"), hashtable);
-    distlay_structure(hashtable);
-
-    if(write_data(hashtable, "data.txt")) printf("Wrote Sucuesful\n");
-
-    if(free_hash_table(hashtable)) printf("Memory clear suscesful\n");
-
-    list_node_load  *list = read_data("data.txt");
-
-
-    if(free_hash_table(hashtable)) printf("Memory clear suscesful\n");
-
     return 0;  
 }

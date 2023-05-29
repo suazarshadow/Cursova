@@ -3,16 +3,37 @@
 #define TABLE_SIZE 10
 #include "list.h"
 
-HashTable *init_hash_table()
+bool add_student(list_node *hashtable[])
 {
-    HashTable *hashtable = malloc(sizeof(list_node));
+    char name[64];
+    char surname[64];
+    char group[64];
+
+    ask_string("Enter name to add:", "Input Error", name);
+    ask_string("Enter surname to add:", "Input Error", surname);
+    ask_string("Enter group to add:", "Input Error", group);
     
+    Student *s = malloc(sizeof(Student));
 
-    hashtable -> head = NULL;
-    hashtable -> tail = NULL;
-    return hashtable;
+    strcpy(s -> name, name);
+    strcpy(s -> surname, surname);
+    strcpy(s -> group, group);
+
+    add_student_info(hashtable[get_key(name, surname, group)], s);
+
 }
+void transfer_data_to_hashtable(list_node_load *list, list_node *hashtable[])
+{
+    int key = 0;
 
+    for (Student *c = list -> head; c != NULL; c = c -> next)
+        {
+            key = get_key(c -> name, c -> surname, c -> group);
+
+            add_student_info(hashtable[key], c);
+            
+        }
+}
 unsigned int get_key(char *name, char *surname, char *group)
 {
     unsigned int key;
@@ -39,47 +60,8 @@ unsigned int get_key(char *name, char *surname, char *group)
     key = key%TABLE_SIZE;
     return key;
 }
-bool add_to_hash_table(Student *student,  int key, HashTable *hashtable)
-{
-    list_node *curr = hashtable -> head;
 
-    for(int i = 0; i < TABLE_SIZE; i++)
-    {
-        printf("%d %d\n", curr -> key);
-        if(key == curr -> key)
-        {
-            
-            break;
-        } 
-        curr = curr -> next;
-    }
-    if (add_student_info(curr, student))
-    {
-        return true;
-    }
-    else return false;
-}
-
-bool delete_from_hash_table(Student *student, int key, HashTable *hashtable)
-{
-    list_node *curr = hashtable -> head;
-
-    for(int i = 0; i < TABLE_SIZE; i++)
-    {
-        if(i == curr -> key)
-        {
-            break;
-        } 
-        curr = curr -> next;
-    }
-    if (delete_student_info(curr, student -> name, student -> surname, student -> group))
-    {
-        return true;
-    }
-    else return false;
-}
-
-void create_list(HashTable *hashtable, int key)
+list_node *create_list(int key)
 {
     list_node *list = malloc(sizeof(Student));
 
@@ -88,17 +70,7 @@ void create_list(HashTable *hashtable, int key)
     list -> size = 0;
     list -> key = key;
     
-    
-    if (list -> key == 0)
-    {
-        hashtable -> head = list;
-        hashtable -> tail = list;
-    }
-    else
-    {
-        hashtable -> tail -> next = list;
-        hashtable -> tail = list;
-    }
+    return list;
 }
 
 bool add_student_info(list_node *list, Student *student)
@@ -120,20 +92,32 @@ bool add_student_info(list_node *list, Student *student)
     list -> size ++;
     return true;
 }
-bool delete_student_info(list_node *list, char *s_name, char *s_surname, char *s_group)
+bool delete_student_info(list_node *hashtable[])
 {
-    if(list->size == 0) 
+    char s_name[64];
+    char s_surname[64];
+    char s_group[64];
+    int key = 0;
+
+    printf("================ Deleting info ================\n");  
+
+  
+    ask_string("Enter name to find:", "Input Error", s_name);
+    ask_string("Enter surname to find:", "Input Error", s_surname);
+    ask_string("Enter group to find:", "Input Error", s_group);
+    //c - current structure
+    key = get_key(s_name, s_surname, s_group);
+    if(hashtable[key]->size == 0) 
     {
         printf("List Error: Empty list!");
         return false;
+
     }
-    //c - current structure
-    Student *c = list -> head;  
+    Student *c = hashtable[key] -> head;  
     //p - previos structure: if we find correct student info that we want to delete we will swith pointer(pointer to next node) in previos node -
     // -to  pointer(pointer to next node) from node with info to delete so we won`t damage structure;
-    Student *p = list -> head;   // In current moment *p == *c  when *c pointer will do two moves we will make one move on *p pointer;
-
-    for(size_t i = 0; i < list -> size; i++)
+    Student *p = hashtable[key] -> head;   // In current moment *p == *c  when *c pointer will do two moves we will make one move on *p pointer
+    for(size_t i = 0; i < hashtable[key] -> size; i++)
     {
         // First we will separete by group, then by surname , then by name;
         // That will help our program to run  a litle bit faster; 
@@ -143,17 +127,16 @@ bool delete_student_info(list_node *list, char *s_name, char *s_surname, char *s
             {
                 if(!strcmp(s_name, c -> name))
                 {
-                    if (c == p) list -> head = c -> next; // in case head is info that we want to delete
+                    if (c == p) hashtable[key] -> head = c -> next; // in case head is info that we want to delete
                     p -> next = c -> next; // pointer switching;
                     free(c);
-                    list -> size--; 
-                    free(s_group);
-                    free(s_name);
-                    free(s_surname);
+                    hashtable[key] -> size--; 
                     return true;
                 }
             }
         }
+
+        c = c -> next;
 
     }
     printf("Error : no such student in database!");
@@ -170,24 +153,23 @@ list_node_load *create_list_for_load()
     return list;
 }
 
-bool distlay_structure(HashTable *hashtable)
+bool distlay_structure(list_node *hashtable[])
 {         
     printf("=============== Displaying info ===============\n"); 
-    list_node *curr = hashtable -> head;
     for(int i = 0; i < TABLE_SIZE; i++)
     {
         printf("Hash Key: %d\n", i);
-        if (curr -> size == 0)
+        if (hashtable[i] -> size == 0)
         { 
             printf("EMPTY\n"); 
         }
         else
         { 
-            Student *c = curr -> head;
+            Student *c = hashtable[i] -> head;
 
-            for (int i = 1; i <= curr -> size; i ++)
+            for (int j = 1; j <= hashtable[i] -> size; j ++)
             {
-                printf("%d.\n", i);
+                printf("===========\n");
                 printf("NAME    : %s\n", c -> name);
                 printf("SURNAME : %s\n", c -> surname);
                 printf("CROUP   : %s\n", c -> group);
@@ -195,11 +177,28 @@ bool distlay_structure(HashTable *hashtable)
                 c = c -> next;
             }
         }
-        curr = curr -> next;
     }
     return true;
 }
 
+
+bool free_list_node_load(list_node_load *list)
+{
+    Student *c = list -> head;
+
+
+    while (c != NULL)
+    {
+        //using temporary pointers to delete because *c will be equal NULL that will stop the cycle; 
+        Student *delete_temp = c;
+        c = c -> next;
+
+        free(delete_temp);
+        
+    }
+    free(list);
+    return true;
+}
 
 bool free_list_node(list_node *list)
 {
@@ -219,26 +218,8 @@ bool free_list_node(list_node *list)
     return true;
 }
 
-bool free_hash_table(HashTable *hashtable)
-{
-    list_node *c = hashtable -> head;
 
-
-    while (c != NULL)
-    {
-        //using temporary pointers to delete because *c will be equal NULL that will stop the cycle; 
-        list_node *delete_temp = c;
-
-        c = c -> next;
-
-        free_list_node(delete_temp);
-        
-    }
-    free(hashtable);
-    return true;
-}
-
-bool write_data(HashTable *hashtable, const char *filename)
+bool write_data(list_node *hashtable[] , const char *filename)
 {
     FILE *file = fopen(filename, "w");
 
@@ -247,28 +228,24 @@ bool write_data(HashTable *hashtable, const char *filename)
         return false;
     }
 
-    list_node *curr = hashtable -> head;
     int size = 0;
 
     for(int i = 0; i < TABLE_SIZE; i++)
     {
-        size += curr -> size;
+        size += hashtable[i] -> size;
     }
 
-    curr  = hashtable -> head;
+    fprintf(file, "%d\n", size);
 
     for(int i = 0; i < TABLE_SIZE; i++)
     {
-        fprintf(file, "%d\n", size);//writing total number for better reading;
 
-        for (Student *c = curr -> head; c != NULL; c = c -> next)
+        for (Student *c = hashtable[i] -> head; c != NULL; c = c -> next)
         {
             fprintf(file, "%s\n", c -> name);
             fprintf(file, "%s\n", c -> surname); 
             fprintf(file, "%s\n", c -> group);
         }
-        curr = curr -> next;
-    
     }
 
     fclose(file);
@@ -283,11 +260,6 @@ list_node_load *read_data(const char *filename)
     list_node_load *list = create_list_for_load();
     Student *p = NULL;
     Student *c = NULL;
-    if (ftell(file) == 0)
-    {
-        printf("File has no content");
-        return list;
-    }
     if (file == NULL)
     {
         return NULL;
@@ -310,15 +282,17 @@ list_node_load *read_data(const char *filename)
         else p -> next = c;   
 
         p = c;
-
+        
         fgets(c->name, 64, file);
         fgets(c->surname, 64, file);
         fgets(c -> group, 64, file);
+        c->name[strlen(c->name)-1] = '\0';
+        c->surname[strlen(c->surname)-1] = '\0';
+        c->group[strlen(c->group)-1] = '\0';
     }
 
     list -> tail = c;
     c -> next = NULL;
-
     fclose(file);
 
     return list;

@@ -29,39 +29,31 @@ typedef struct list_node
     Student *tail;
     int size;
     int key;
-    struct list_node *next;
 }list_node;
-
-typedef struct HashTable
-{
-    struct list_node *head;
-    struct list_node *tail;
-}HashTable;
 
 unsigned int get_key(char *name, char *surname, char *group);
 
-void create_list(HashTable *hashtable, int key);
+void transfer_data_to_hashtable(list_node_load *list, list_node *hashtable[]);
 
-bool add_to_hash_table(Student *student, int key, HashTable *hashtable);
-
-bool delete_from_hash_table(Student *student, int key, HashTable *hashtable);
+list_node *create_list(int key);
 
 list_node_load *create_list_for_load();
 
-HashTable *init_hash_table();
-
 bool add_student_info(list_node *list, Student *student);
 
-bool delete_student_info(list_node *list, char *s_name, char *s_surname, char *s_group);
+bool delete_student_info(list_node *hashtable[]);
 
-bool distlay_structure(HashTable *hashtable);
+bool distlay_structure(list_node *hashtable[]);
 
 bool free_list_node(list_node *list);
 
-bool write_data(HashTable *hashtable, const char *filename);
+bool write_data(list_node *hashtable[], const char *filename);
+
+bool add_student(list_node *hashtable[]);
 
 list_node_load *read_data(const char *filename);
 
-bool free_hash_table(HashTable *hashtable);
+bool free_list_node_load(list_node_load *list);
+
 
 #endif
