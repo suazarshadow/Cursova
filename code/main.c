@@ -1,11 +1,12 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include "list.h"
+#define TABLE_SIZE 10
 
 int main()
 {
     
-    YESNO yesno = YES;
+   /* YESNO yesno = YES;
 
  
     list_node *list = read_data("data.txt");
@@ -120,6 +121,51 @@ int main()
         else printf("Unknow command\n!");
     }
     
-       
-    return 0;   
+       */
+    HashTable *hashtable = init_hash_table();
+    int key = 0;
+    while (key < TABLE_SIZE)
+    {
+        create_list(hashtable, key);
+        key++;
+    }
+    list_node *curr = hashtable -> head;
+    key = 0;
+    while (key < TABLE_SIZE)
+    {
+        
+        if(curr -> size  == 0)
+        {
+            printf("--------\n");
+        }
+        else
+        {
+            printf("Error");
+        }
+        key++;
+        curr = curr -> next;
+    }
+    printf("----------\n");
+    printf("Sviatoslav Cherniak KM-24 => %d\n", get_key("Sviatoslav", "Cherniak", "KM-24"));
+    printf("Max Fedosenko KM-24 => %u\n", get_key("Max", "Fedosenko", "KM-24"));
+    printf("max fedosenko km-24 => %u\n", get_key("max", "fedosenko", "km-24"));
+
+    Student *s = malloc(sizeof(Student));
+
+    strcpy(s->name, "Sviatoslav");
+    strcpy(s->surname, "Cherniak");
+    strcpy(s->group, "KM-24");
+    add_to_hash_table(s, get_key("Sviatoslav", "Cherniak", "KM-24"), hashtable);
+    distlay_structure(hashtable);
+
+    if(write_data(hashtable, "data.txt")) printf("Wrote Sucuesful\n");
+
+    if(free_hash_table(hashtable)) printf("Memory clear suscesful\n");
+
+    list_node_load  *list = read_data("data.txt");
+
+
+    if(free_hash_table(hashtable)) printf("Memory clear suscesful\n");
+
+    return 0;  
 }
