@@ -3,6 +3,46 @@
 #define TABLE_SIZE 10
 #include "list.h"
 
+bool find_info(list_node *hashtable[])
+{
+    char s_name[64];
+    char s_surname[64];
+    char s_group[64];
+    int key = 0;
+
+
+  
+    ask_string("Enter name to find:", "Input Error", s_name);
+    ask_string("Enter surname to find:", "Input Error", s_surname);
+    ask_string("Enter group to find:", "Input Error", s_group);
+    //c - current structure
+    key = get_key(s_name, s_surname, s_group);
+
+    Student *c = hashtable[key] -> head;  
+    //p - previos structure: if we find correct student info that we want to delete we will swith pointer(pointer to next node) in previos node -
+    // -to  pointer(pointer to next node) from node with info to delete so we won`t damage structure;
+    Student *p = hashtable[key] -> head;   // In current moment *p == *c  when *c pointer will do two moves we will make one move on *p pointer
+    for(size_t i = 0; i < hashtable[key] -> size; i++)
+    {
+        // First we will separete by group, then by surname , then by name;
+        // That will help our program to run  a litle bit faster; 
+        if (!strcmp(s_group, c -> group))
+        {
+            if(!strcmp(s_surname, c -> surname))
+            {
+                if(!strcmp(s_name, c -> name))
+                {
+                    return true;
+                }
+            }
+        }
+        p = c;
+        c = c -> next;
+
+    }
+    printf("Error : no such student in database!\n");
+    return false;
+}   
 bool add_student(list_node *hashtable[])
 {
     char name[64];

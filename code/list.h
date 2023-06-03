@@ -6,7 +6,6 @@
 #include "input.h"
 
 
-
 typedef struct Student
 {
     char name[64];
@@ -34,6 +33,8 @@ typedef struct list_node
 unsigned int get_key(char *name, char *surname, char *group);
 
 bool transfer_data_to_hashtable(list_node_load *list, list_node *hashtable[]);
+
+bool find_info(list_node *hashtable[]);
 
 list_node *create_list(int key);
 

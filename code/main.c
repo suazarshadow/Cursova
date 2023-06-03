@@ -23,7 +23,7 @@ int main()
     printf("================================================");
     while(1)
     {
-        printf("Commands:\n1 - load database\n2 - add student\n3 - delete student\n4 - display all\n5 - save work\n6 - end work\n");
+        printf("Commands:\n1 - load database\n2 - add student\n3 - delete student\n4 - display all\n5 - save work\n6 - find info about someone\n7 - end work\n");
         printf("================================================\n");
 
         choise = ask_int("Enter int to chose one option from list\n>", "Error: expected int value!\n"); 
@@ -60,6 +60,10 @@ int main()
                 printf("================================================\n");
                 break;
             case 6:
+                if(find_info(hashtable)) printf("some info\n"); 
+                else printf("There is no such student in database\n");
+                break;
+            case 7:
                 printf("WARNING: your non saved data will be deleted FOREVER\n");
                 q = ask_yes_no("Wanna save data[y/n]","Error: wrond input");
                 if(q) 
