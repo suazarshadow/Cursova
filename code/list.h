@@ -33,7 +33,7 @@ typedef struct list_node
 
 unsigned int get_key(char *name, char *surname, char *group);
 
-void transfer_data_to_hashtable(list_node_load *list, list_node *hashtable[]);
+bool transfer_data_to_hashtable(list_node_load *list, list_node *hashtable[]);
 
 list_node *create_list(int key);
 
@@ -51,9 +51,8 @@ bool write_data(list_node *hashtable[], const char *filename);
 
 bool add_student(list_node *hashtable[]);
 
-list_node_load *read_data(const char *filename);
+list_node_load *read_data(const char *filename, list_node *hashtable[]);
 
 bool free_list_node_load(list_node_load *list);
-
 
 #endif

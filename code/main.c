@@ -26,16 +26,18 @@ int main()
         printf("Commands:\n1 - load database\n2 - add student\n3 - delete student\n4 - display all\n5 - save work\n6 - end work\n");
         printf("================================================\n");
 
-        choise = ask_int("Enter option\n", "Error: expected int value!\n"); 
+        choise = ask_int("Enter int to chose one option from list\n>", "Error: expected int value!\n"); 
         printf("================================================\n");
 
         switch(choise)
         {
             case 1:
-                list = read_data("data.txt");
-                transfer_data_to_hashtable(list, hashtable);
-                printf("DataBase loaded succsesfully\n");
-                free_list_node_load(list);
+                list = read_data("data.txt", hashtable);
+                if (transfer_data_to_hashtable(list, hashtable))
+                {
+                    printf("DataBase loaded succsesfully\n");
+                    free_list_node_load(list);
+                }
                 printf("================================================\n");
                 break;
             case 2:
@@ -44,8 +46,7 @@ int main()
                 printf("================================================\n");
                 break;
             case 3:
-                delete_student_info(hashtable);
-                printf("Student deleted sucsesfuly\n");
+                if (delete_student_info(hashtable))printf("Student deleted sucsesfuly\n");
                 printf("================================================\n");
                 break;
             case 4:

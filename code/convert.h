@@ -10,7 +10,6 @@
 #include <stdio.h>
 
 bool try_convert_to_int(const char *string, int *result);
-bool try_convert_to_long(const char *str, long *res);
-bool try_convert_to_double(const char *str, double *res);
+
 
 #endif

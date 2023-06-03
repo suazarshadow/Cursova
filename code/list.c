@@ -22,9 +22,15 @@ bool add_student(list_node *hashtable[])
     add_student_info(hashtable[get_key(name, surname, group)], s);
 
 }
-void transfer_data_to_hashtable(list_node_load *list, list_node *hashtable[])
+bool transfer_data_to_hashtable(list_node_load *list, list_node *hashtable[])
 {
     int key = 0;
+
+    if(list == NULL)
+    {
+        printf("Nothing to load\n");
+        return false;
+    }
 
     for (Student *c = list -> head; c != NULL; c = c -> next)
         {
@@ -33,6 +39,7 @@ void transfer_data_to_hashtable(list_node_load *list, list_node *hashtable[])
             add_student_info(hashtable[key], c);
             
         }
+    return true;
 }
 unsigned int get_key(char *name, char *surname, char *group)
 {
@@ -107,12 +114,7 @@ bool delete_student_info(list_node *hashtable[])
     ask_string("Enter group to find:", "Input Error", s_group);
     //c - current structure
     key = get_key(s_name, s_surname, s_group);
-    if(hashtable[key]->size == 0) 
-    {
-        printf("List Error: Empty list!");
-        return false;
 
-    }
     Student *c = hashtable[key] -> head;  
     //p - previos structure: if we find correct student info that we want to delete we will swith pointer(pointer to next node) in previos node -
     // -to  pointer(pointer to next node) from node with info to delete so we won`t damage structure;
@@ -135,11 +137,11 @@ bool delete_student_info(list_node *hashtable[])
                 }
             }
         }
-
+        p = c;
         c = c -> next;
 
     }
-    printf("Error : no such student in database!");
+    printf("Error : no such student in database!\n");
     return false;
 }   
 list_node_load *create_list_for_load()
@@ -254,7 +256,7 @@ bool write_data(list_node *hashtable[] , const char *filename)
 }
 
 
-list_node_load *read_data(const char *filename)
+list_node_load *read_data(const char *filename, list_node *hashtable[])
 {
     FILE *file = fopen(filename, "r");
     list_node_load *list = create_list_for_load();
@@ -274,14 +276,9 @@ list_node_load *read_data(const char *filename)
 
     
 
-    for (int i =0; i < list -> size; i++)
+    for (int i = 0 ; i < list -> size; i++)
     {
-        c = (Student *)malloc(sizeof(Student));
-
-        if (i == 0 ) list -> head = c;
-        else p -> next = c;   
-
-        p = c;
+        c = (Student *)malloc(sizeof(Student)); 
         
         fgets(c->name, 64, file);
         fgets(c->surname, 64, file);
@@ -289,12 +286,10 @@ list_node_load *read_data(const char *filename)
         c->name[strlen(c->name)-1] = '\0';
         c->surname[strlen(c->surname)-1] = '\0';
         c->group[strlen(c->group)-1] = '\0';
+        add_student_info(hashtable[get_key(c -> name, c -> surname, c -> group )], c);
     }
 
-    list -> tail = c;
-    c -> next = NULL;
     fclose(file);
-
     return list;
 }
 #endif
